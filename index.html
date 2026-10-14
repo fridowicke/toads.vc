@@ -19,7 +19,9 @@
     footer { position: fixed; bottom: 28px; left: 24px; right: 24px; display: flex; justify-content: center; gap: 24px; font: 13px/1.5 Arial, Helvetica, sans-serif; }
     a { color: inherit; text-decoration: none; }
     a:hover { text-decoration: underline; text-underline-offset: 4px; }
-    a:focus-visible, .toad:focus-visible { outline: 2px solid; outline-offset: 6px; }
+    a:focus-visible { outline: 2px solid; outline-offset: 6px; }
+    .toad:focus { outline: none; }
+    .keyboard-nav .toad:focus { outline: 2px solid #000; outline-offset: 6px; }
   </style>
 </head>
 <body>
@@ -36,6 +38,12 @@
     const pupil = document.querySelector('#pupil');
     const glint = document.querySelector('#eye-glint');
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Tab') document.documentElement.classList.add('keyboard-nav');
+    });
+    document.addEventListener('pointerdown', () => {
+      document.documentElement.classList.remove('keyboard-nav');
+    }, {capture: true});
     function lookAt(event) {
       if (reducedMotion.matches) return;
       const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(toad.getScreenCTM().inverse());
