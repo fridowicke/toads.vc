@@ -10,11 +10,11 @@
     * { box-sizing: border-box; }
     html { color-scheme: light; }
     body { margin: 0; background: #fff; color: #000; font-family: Georgia, "Times New Roman", serif; }
-    main { min-height: 100vh; min-height: 100svh; display: grid; place-items: center; padding: 40px 24px 100px; }
-    .brand { width: min(410px, 100%); text-align: center; }
-    .toad { display: block; width: 94%; height: auto; margin: 0 auto 12px; }
-    h1 { font-size: clamp(44px, 11vw, 74px); line-height: 1; letter-spacing: .065em; margin: 0; font-weight: 400; }
-    p { font-size: clamp(22px, 5.5vw, 34px); line-height: 1.2; margin: 3px 0 0; font-weight: 400; white-space: nowrap; }
+    main { min-height: 100vh; min-height: 100svh; display: grid; place-items: center; padding: 40px 24px 80px; }
+    .brand { width: min(380px, 100%); text-align: center; }
+    .toad { display: block; width: 96%; height: auto; margin: 0 auto 18px; }
+    h1 { font-size: clamp(44px, 11vw, 70px); line-height: 1; letter-spacing: .04em; margin: 0; font-weight: 400; }
+    p { font-size: clamp(22px, 5.5vw, 30px); line-height: 1.2; margin: 7px 0 0; font-weight: 400; white-space: nowrap; }
     .toad { cursor: pointer; }
     footer { position: fixed; bottom: 28px; left: 24px; right: 24px; display: flex; justify-content: center; gap: 24px; font: 13px/1.5 Arial, Helvetica, sans-serif; }
     a { color: inherit; text-decoration: none; }
@@ -75,12 +75,12 @@
         const y = Number(token);
         const jawWeight = clamp((y - 82) / 30) * clamp((177 - y) / 38) * clamp((162 - x) / 48);
         const throatWeight = Math.exp(-(((x - 98) / 48) ** 2 + ((y - 142) / 30) ** 2));
-        return `${(x - jaw * 4 * jawWeight - throat * 11 * throatWeight).toFixed(2)} ${(y + jaw * 11 * jawWeight + throat * 5 * throatWeight).toFixed(2)}`;
+        return `${(x - jaw * 3 * jawWeight - throat * 7 * throatWeight).toFixed(2)} ${(y + jaw * 7 * jawWeight + throat * 3 * throatWeight).toFixed(2)}`;
       }).join(' ');
     }
     function setPose(jaw, throat) {
       shape.setAttribute('d', pose(jaw, throat));
-      mouth.setAttribute('d', `M35 79 Q99 85 160 110 Q${99 - 3 * jaw} ${85 + 43 * jaw} 35 79 Z`);
+      mouth.setAttribute('d', `M35 79 Q99 85 160 110 Q${99 - 2 * jaw} ${85 + 32 * jaw} 35 79 Z`);
     }
     const ease = n => n * n * (3 - 2 * n);
     function envelope(t, start, peak, hold, end) {
@@ -94,10 +94,10 @@
     function animateQuack() {
       const began = performance.now();
       function frame(now) {
-        const t = Math.min(1, (now - began) / 1500);
+        const t = Math.min(1, (now - began) / 1000);
         if (!reducedMotion.matches) {
-          const throat = envelope(t, 0, .24, .43, .85);
-          const jaw = envelope(t, .16, .36, .58, .9);
+          const throat = envelope(t, 0, .22, .4, .83);
+          const jaw = envelope(t, .12, .32, .52, .87);
           setPose(jaw, throat);
         }
         if (t < 1) requestAnimationFrame(frame);
@@ -110,25 +110,25 @@
       requestAnimationFrame(frame);
     }
     function playQuack() {
-      const time = audioContext.currentTime + .3;
+      const time = audioContext.currentTime + .18;
       const oscillator = audioContext.createOscillator();
       const filter = audioContext.createBiquadFilter();
       const gain = audioContext.createGain();
       oscillator.type = 'sawtooth';
       oscillator.frequency.setValueAtTime(175, time);
-      oscillator.frequency.exponentialRampToValueAtTime(120, time + .32);
-      oscillator.frequency.exponentialRampToValueAtTime(78, time + .72);
+      oscillator.frequency.exponentialRampToValueAtTime(120, time + .22);
+      oscillator.frequency.exponentialRampToValueAtTime(78, time + .48);
       filter.type = 'bandpass';
       filter.Q.value = 2.5;
       filter.frequency.setValueAtTime(1050, time);
-      filter.frequency.exponentialRampToValueAtTime(620, time + .72);
+      filter.frequency.exponentialRampToValueAtTime(620, time + .48);
       gain.gain.setValueAtTime(0, time);
-      gain.gain.linearRampToValueAtTime(.5, time + .075);
-      gain.gain.setValueAtTime(.42, time + .32);
-      gain.gain.exponentialRampToValueAtTime(.001, time + .72);
+      gain.gain.linearRampToValueAtTime(.5, time + .05);
+      gain.gain.setValueAtTime(.42, time + .22);
+      gain.gain.exponentialRampToValueAtTime(.001, time + .48);
       oscillator.connect(filter).connect(gain).connect(audioContext.destination);
       oscillator.start(time);
-      oscillator.stop(time + .75);
+      oscillator.stop(time + .5);
     }
     async function quack() {
       if (quacking) return;
@@ -141,9 +141,7 @@
         animateQuack();
       }
     }
-    document.addEventListener('click', event => {
-      if (!event.target.closest('a')) quack();
-    });
+    toad.addEventListener('click', quack);
     toad.addEventListener('keydown', event => {
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
