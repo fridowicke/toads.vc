@@ -1,5 +1,5 @@
-# toads.vc
+# TOADS Venture Capital
 
-Minimal static website for T.O.A.D. Capital Advisors. Hosted with GitHub Pages.
+Minimal static website at toads.vc, hosted with GitHub Pages.
 
-Edit `index.html` for layout and `toad.svg` for the vector illustration.
+The toad is an inline SVG with smooth vector paths. Its pupil follows the pointer and respects reduced motion. Edit index.html for the page; toad.svg is the standalone illustration and favicon.
